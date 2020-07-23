@@ -1,31 +1,55 @@
 from datetime import datetime,timedelta
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from django.contrib.auth.models import User,auth
+# from django.contrib.auth.models import User,auth
 from rest_framework.decorators import api_view
-from .serializers import UserSerializer,Donor_detailsSerializer,Donorsorted_detailsSerializer,Request_detailsSerializers,BloodbankSerializer
+from .serializers import UserSerializer,Donor_detailsSerializer,Donorsorted_detailsSerializer,Request_detailsSerializers
 from rest_framework import generics,viewsets
-from .models import Donor_details,Request_details,Bloodbank
+from .models import Donor_details,Request_details
 from django.contrib.gis.geos import fromstr
 from django.contrib.gis.db.models.functions import Distance
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
 from rest_framework.views import APIView
-
-
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from geopy.geocoders import Nominatim
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (AllowAny,)
 
-class DonordetailView(viewsets.ModelViewSet):
-    queryset = Donor_details.objects.all()
-    serializer_class = Donor_detailsSerializer
-
-class BloodbankView(viewsets.ModelViewSet):
-    queryset = Bloodbank.objects.all()
-    serializer_class = BloodbankSerializer
+class DonorList(APIView):
+    def get(self, request, format=None):
+        donor = Donor_details.objects.all()
+        serializer = Donor_detailsSerializer(donor, many=True)
+        return Response(serializer.data)
+    def post(self, request, format=None):
+        if "first_name" in request.data:
+            first_name = request.data.get('first_name')
+            last_name = request.data.get('last_name')
+            email = request.data.get('email')
+            Bloodgroup = request.data.get('Bloodgroup')
+            latitude = request.data.get('latitude')
+            longitude = request.data.get('longitude')
+            phone = request.data.get('phone')
+            last_blood_given_on = request.data.get('last_blood_given_on')
+            location = fromstr(f'POINT({longitude} {latitude})', srid=4326)
+            geolocator = Nominatim(user_agent="firstthumb")
+            location_for = geolocator.reverse(f'{latitude},{longitude}')
+            address = location_for.address
+            donor=Donor_details(location =location,first_name=first_name,last_name=last_name,email=email,Bloodgroup=Bloodgroup,
+            latitude=latitude,longitude=longitude,address=address,last_blood_given_on=last_blood_given_on,phone=phone,)
+            donor.save()
+            p_k=donor.pk
+            return Response({'id':p_k},status=status.HTTP_201_CREATED)
+# class BloodbankView(viewsets.ModelViewSet):
+#     queryset = Bloodbank.objects.all()
+#     serializer_class = BloodbankSerializer
+#     permission_classes = (AllowAny,)
 
 
 class RequestList(APIView):
@@ -51,8 +75,6 @@ class SortedView(APIView):
     def post(self,request):
         if "registration_id" in request.data:
             registration_id = request.data.get('registration_id')
-            four_months_ago = 4
-
             user_location = Request_details.objects.filter(registration_id=registration_id).values_list('location',flat=True)[0]
             blood_group = Request_details.objects.filter(registration_id=registration_id).values_list('Bloodgroup',flat=True)[0]
             d =datetime.now()
