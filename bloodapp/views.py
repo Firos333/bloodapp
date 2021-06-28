@@ -12,20 +12,24 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 
 class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (AllowAny,)
 
 class DonordetailView(viewsets.ModelViewSet):
     queryset = Donor_details.objects.all()
     serializer_class = Donor_detailsSerializer
+    permission_classes = (AllowAny,)
 
 class BloodbankView(viewsets.ModelViewSet):
     queryset = Bloodbank.objects.all()
     serializer_class = BloodbankSerializer
+    permission_classes = (AllowAny,)
 
 
 class RequestList(APIView):
