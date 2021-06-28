@@ -9,9 +9,9 @@ Geo-Django is used to sortout the nearest Blood donor.
 
 KeyWords:
 
-#ionic_app_and_Django_integration
-#Geo-Django for sorting donor location wise
-#REST APIs
+#ionic_app_and_Django_integration __
+#Geo-Django for sorting donor location wise __
+#REST APIs __
 
 
 Examples:
