@@ -1,17 +1,17 @@
 # bloodapp
 ![postgis](https://img.shields.io/badge/IONIC-Django%20Backend-green)
-backend for ionic Blood App __
+backend for ionic Blood App 
 
 
-Description:
+Description:  <br />
 This is REST APIs for Bloodbank App , which help to find blood donors in a specific location through location wise search in django backend. 
 Geo-Django is used to sortout the nearest Blood donor.
 
 KeyWords:
 
-#ionic_app_and_Django_integration __
-#Geo-Django for sorting donor location wise __
-#REST APIs __
+#ionic_app_and_Django_integration  <br />
+#Geo-Django for sorting donor location wise  <br />
+#REST APIs  <br />
 
 
 Examples:
